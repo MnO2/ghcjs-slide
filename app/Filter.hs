@@ -15,6 +15,7 @@ import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 
+import           System.Directory
 import           System.Exit
 import           System.IO
 import           System.Process
@@ -42,7 +43,7 @@ modName n = T.pack ("M" ++ show n)
 
 writeBlockModule :: Int -> Text -> IO ()
 writeBlockModule n xs = do
-  tmpl <- T.readFile "module.hs.tmpl"
+  tmpl <- T.readFile "tmpl/module.hs.tmpl"
   T.writeFile ("src/" ++ T.unpack mn ++ ".hs") $
     T.replace "$modulename" mn (T.replace "$code" xs tmpl)
   where
@@ -50,7 +51,7 @@ writeBlockModule n xs = do
 
 writeMainModule :: Int -> IO ()
 writeMainModule n = do
-  tmpl <- T.readFile "main.hs.tmpl"
+  tmpl <- T.readFile "tmpl/main.hs.tmpl"
   T.writeFile "src/main.hs" $
     T.replace "$imports" imports $ T.replace "$runinit" runinit tmpl
   where
@@ -58,7 +59,9 @@ writeMainModule n = do
     imports = mconcat $ map (\n->"import qualified "<>modName n<>"\n") [1..n]
 
 compileCode :: IO (ExitCode, String, String)
-compileCode = readProcessWithExitCode "ghcjs" ["-O", "-isrc", "src/main.hs"] ""
+compileCode = do
+   setCurrentDirectory "src"
+   readProcessWithExitCode "cabal" ["exec", "ghcjs", "main.hs"] ""
 
 main :: IO ()
 main = do

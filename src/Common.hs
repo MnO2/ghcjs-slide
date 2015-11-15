@@ -24,11 +24,11 @@ import qualified JavaScript.Web.Canvas as C
 createCanvas :: Int -> Int -> IO C.Canvas
 createCanvas w h = C.create w h
 
-createDiagramOutput :: Int -> Int -> Diagram Canvas -> IO (JSRef, C.Context)
+createDiagramOutput :: Int -> Int -> Diagram Canvas -> IO (JSVal, C.Context)
 createDiagramOutput w h d = do
   c   <- C.create w h
   ctx <- C.getContext c
-  return (jsref c, ctx)
+  return (jsval c, ctx)
 
 renderDia' :: Int -> Int -> C.Context -> Diagram Canvas -> IO ()
 renderDia' w h c d =
@@ -58,7 +58,7 @@ dynamicDiagram ref w h initial f = do
   appendChild c  e
   triggerUpdate <- createInteraction updateResult
   cb <- syncCallback ThrowWouldBlock triggerUpdate
-  addEventListener "input" (jsref cb) tf
+  addEventListener "input" (jsval cb) tf
 
 mouseDiagram :: String -> Int -> Int -> (Double -> Double -> Diagram Canvas) -> IO ()
 mouseDiagram ref w h f = do
@@ -91,9 +91,9 @@ mouseDiagram ref w h f = do
         writeIORef my ((cy-bTop)/(bBottom-bTop))
         triggerUpdate
   cb <- syncCallback1 ThrowWouldBlock mouseHandler
-  addEventListener "mousemove" (jsref cb) c
+  addEventListener "mousemove" (jsval cb) c
 
-createOutput :: JSString -> IO (JSRef, JSRef)
+createOutput :: JSString -> IO (JSVal, JSVal)
 createOutput xs = do
   p <- createElement "pre"
   setAttribute "class" "sourceCode" p
@@ -104,7 +104,7 @@ createOutput xs = do
   appendChild c p
   return (p, c)
 
-updateOutput :: JSString -> JSRef -> IO ()
+updateOutput :: JSString -> JSVal -> IO ()
 updateOutput xs c = do
   fc <- firstChild c
   t  <- createTextNode xs
@@ -119,7 +119,7 @@ createInteraction action = mask_ $ do
   let forceUpdate = killThread tid >> tryPutMVar mv () >> return ()
   return forceUpdate
 
-createTextField :: JSString -> IO (JSRef, JSRef)
+createTextField :: JSString -> IO (JSVal, JSVal)
 createTextField xs = do
   p  <- createElement "pre"
   setAttribute "class" "interact" p
@@ -151,72 +151,72 @@ dynamicText elemId initial f = do
   appendChild p  e
   triggerUpdate <- createInteraction updateResult
   cb <- syncCallback ThrowWouldBlock triggerUpdate
-  addEventListener "input" (jsref cb) tf
+  addEventListener "input" (jsval cb) tf
 
 foreign import javascript
   "document.getElementById($1)"
-  getElementById :: JSString -> IO JSRef
+  getElementById :: JSString -> IO JSVal
 
 foreign import javascript
   "document.createTextNode($1)"
-  createTextNode :: JSString -> IO JSRef
+  createTextNode :: JSString -> IO JSVal
 
 foreign import javascript
   "$2.appendChild($1);"
-  appendChild :: JSRef -> JSRef -> IO ()
+  appendChild :: JSVal -> JSVal -> IO ()
 
 foreign import javascript
   "document.createElement($1)"
-  createElement :: JSString -> IO JSRef
+  createElement :: JSString -> IO JSVal
 
 foreign import javascript
   "$3.setAttribute($1,$2);"
-  setAttribute :: JSString -> JSString -> JSRef -> IO ()
+  setAttribute :: JSString -> JSString -> JSVal -> IO ()
 
 foreign import javascript
   "$2.getAttribute($1)"
-  getAttribute :: JSString -> JSRef -> IO JSString
+  getAttribute :: JSString -> JSVal -> IO JSString
 
 foreign import javascript
   "$3.addEventListener($1,$2);"
-  addEventListener :: JSString -> JSRef -> JSRef -> IO ()
+  addEventListener :: JSString -> JSVal -> JSVal -> IO ()
                       
 foreign import javascript
   "$3.replaceChild($1,$2);"
-  replaceChild :: JSRef -> JSRef -> JSRef -> IO ()
+  replaceChild :: JSVal -> JSVal -> JSVal -> IO ()
 
 foreign import javascript
   "$1.firstChild"
-  firstChild :: JSRef -> IO JSRef
+  firstChild :: JSVal -> IO JSVal
 
 foreign import javascript
   "$1.value"
-  getValue :: JSRef -> IO JSString
+  getValue :: JSVal -> IO JSString
 
 foreign import javascript
   "$1.clientX"
-  getClientX :: JSRef -> IO Double
+  getClientX :: JSVal -> IO Double
 
 foreign import javascript
   "$1.clientY"
-  getClientY :: JSRef -> IO Double
+  getClientY :: JSVal -> IO Double
                 
 foreign import javascript
   "$1.getBoundingClientRect()"
-  getBoundingClientRect :: JSRef -> IO JSRef
+  getBoundingClientRect :: JSVal -> IO JSVal
                            
 foreign import javascript
   "$1.top"
-  getTop :: JSRef -> IO Double
+  getTop :: JSVal -> IO Double
 
 foreign import javascript
   "$1.left"
-  getLeft :: JSRef -> IO Double
+  getLeft :: JSVal -> IO Double
 
 foreign import javascript
   "$1.right"
-  getRight :: JSRef -> IO Double
+  getRight :: JSVal -> IO Double
 
 foreign import javascript
   "$1.bottom"
-  getBottom :: JSRef -> IO Double
+  getBottom :: JSVal -> IO Double

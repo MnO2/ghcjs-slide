@@ -1,9 +1,9 @@
 ---
 title: 'A Lightning Talk with GHCJS'
-author: Luite Stegeman
+author: Paul Meng
 tags: [Haskell, functional programming, JavaScript, web, GHCJS]
 abstract: |
-  Haskell Symposium 2015
+  Haskell.SG 2015
 ...
 
 # GHCJS

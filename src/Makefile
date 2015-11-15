@@ -8,7 +8,7 @@ install:
 	cabal install --ghcjs ./diagrams-ghcjs
 
 clean:
-	find . -name "*.js_o" -o -name "*.js_hi" | xargs rm
-	rm -rf main.jsexe
+	rm -f *.js_o *.js_hi
 	rm -f M*.hs main.hs
+	rm -rf main.jsexe
 

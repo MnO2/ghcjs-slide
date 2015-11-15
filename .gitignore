@@ -19,3 +19,6 @@ site
 .cabal-sandbox/
 cabal.sandbox.config
 .stack-work
+src/diagrams-ghcjs/
+src/M*.hs
+src/main.hs
